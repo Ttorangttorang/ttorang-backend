@@ -9,8 +9,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3307/ttorang?serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-    username:
-    password:
+    username: root
+    password: root
 
   jpa:
     hibernate:
