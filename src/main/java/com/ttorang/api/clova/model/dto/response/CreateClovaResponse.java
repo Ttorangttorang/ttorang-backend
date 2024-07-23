@@ -1,33 +1,44 @@
 package com.ttorang.api.clova.model.dto.response;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 public class CreateClovaResponse {
+    private Status status;
+    private Result result;
 
-    private Message message;
-
-    @Setter
-    @Getter
-    public static class Message {
-
-        @Schema(description = "role", example = "assistant")
-        private String role;
-
-        @Schema(description = "교정 내용", example = "발표 내용 예제")
-        private String content;
+    @Getter @Setter
+    public static class Status {
+        private String code;
+        private String message;
     }
 
-//    public CreateClovaResponse of(CreateClovaResponse createClovaResponse) {
-//        return new CreateClovaResponse(
-//                createClovaResponse.getMessage().getRole(),
-//                createClovaResponse.getMessage().getContent());
-//    }
+    @Getter @Setter
+    public static class Result {
+        private Message message;
+        private String stopReason;
+        private int inputLength;
+        private int outputLength;
+        private List<AiFilter> aiFilter;
+        private long seed;
+
+        @Getter @Setter
+        public static class Message {
+            private String role;
+            private String content;
+
+        }
+
+        @Getter @Setter
+        public static class AiFilter {
+            private String groupName;
+            private String name;
+            private String score;
+
+        }
+    }
 }

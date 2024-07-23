@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ttorang.api.clova.model.dto.request.CreateClovaRequest;
 import com.ttorang.api.clova.model.dto.response.CreateClovaResponse;
-import com.ttorang.global.model.RestApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -45,13 +44,10 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     }
 
     @Override
-    public String excuteClova(CreateClovaRequest request) {
-        return requestClova2(request);
-    }
-
-    @Override
-    public String requestClova2(CreateClovaRequest request) {
+    public CreateClovaResponse requestClova2(CreateClovaRequest request) {
+        log.info("여기 잘 찍히는가?");
         String requestJson = requestJson(request);
+        ObjectMapper objectMapper = new ObjectMapper();
 
         String responseJson = webClient.post()
                 .uri(CLOVA_API_URL)
@@ -71,8 +67,7 @@ public class ClovaChatServiceImpl implements ClovaChatService {
                             return Mono.error(new RuntimeException("Error response status: " + response.statusCode()));
                         }
                 )
-                .bodyToMono(String.class) // 응답을 String 클래스로 변환
-                // TODO : 에러 처리
+                .bodyToMono(String.class)
                 .doOnError(WebClientResponseException.class, e -> {
                     log.error("WebClientResponseException: {}", e.getMessage());
                 })
@@ -85,9 +80,14 @@ public class ClovaChatServiceImpl implements ClovaChatService {
                 .doOnError(e -> {
                     log.error("Unexpected error: {}", e.getMessage());
                 })
-                .block();  // Mono를 블록하여 동기식으로 반환
+                .block(); // Mono를 블록하여 동기식으로 반환
 
-        return responseJson;
+        try {
+            return objectMapper.readValue(responseJson, CreateClovaResponse.class);
+        } catch (Exception e) {
+            log.error("Error parsing JSON response", e);
+            throw new RuntimeException("Error parsing JSON response", e);
+        }
     }
 
     @Override
@@ -100,6 +100,7 @@ public class ClovaChatServiceImpl implements ClovaChatService {
                 .header(CLOVA_API_KEY_HEADER, clovastudioApiKey)
                 .header(GATEWAY_API_KEY_HEADER, gateWayApiKey)
                 .header(CLOVA_STUDIO_REQUEST_ID, clovastudioRequestId)
+//                .header(HttpHeaders.ACCEPT_CHARSET, "UTF-8")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.CACHE_CONTROL, "no-cache")
