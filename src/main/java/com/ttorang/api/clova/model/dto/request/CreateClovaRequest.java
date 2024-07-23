@@ -20,7 +20,7 @@ public class CreateClovaRequest {
     @Schema(description = "발표 내용", example = "발표 내용 예제")
     private String content;
 
-    @Schema(description = "중복 표현 제거", example = "Y")
-    private String duplicate;
+//    @Schema(description = "중복 표현 제거", example = "Y")
+//    private String duplicate;
 
 }
