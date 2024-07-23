@@ -148,7 +148,7 @@ public class ClovaChatServiceImpl implements ClovaChatService {
         sb.append("- 발표 주제: " + request.getTopic());
         sb.append("\n- 발표 목적: " + request.getPurpose());
         sb.append("\n- 종결 어미: " + request.getWord());
-        sb.append("\n- 중복 문항 제거: " + request.getDuplicate());
+//        sb.append("\n- 중복 문항 제거: " + request.getDuplicate());
         sb.append("\n- 발표 내용: " + request.getContent());
 
         return sb.toString();
