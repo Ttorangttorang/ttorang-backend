@@ -3,6 +3,7 @@ package com.ttorang.api.clova.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.ttorang.api.clova.model.dto.request.CreateClovaRequest;
 import com.ttorang.api.clova.model.dto.response.CreateClovaResponse;
@@ -32,7 +33,7 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     @Value("${clovastudio.request.id}")
     private String clovastudioRequestId;
 
-    private final String CLOVA_API_URL = "https://clovastudio.stream.ntruss.com/testapp/v1/chat-completions/HCX-003";
+    private final String CLOVA_API_URL = "https://clovastudio.stream.ntruss.com/serviceapp/v1/chat-completions/HCX-003";
     private final String CLOVA_API_KEY_HEADER = "X-NCP-CLOVASTUDIO-API-KEY";
     private final String GATEWAY_API_KEY_HEADER = "X-NCP-APIGW-API-KEY";
     private final String CLOVA_STUDIO_REQUEST_ID = "X-NCP-CLOVASTUDIO-REQUEST-ID";
@@ -146,11 +147,11 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     public String requestUserMessage(CreateClovaRequest request) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("- 발표 주제: " + request.getTopic());
-        sb.append("\n- 발표 목적: " + request.getPurpose());
-        sb.append("\n- 종결 어미: " + request.getWord());
-        sb.append("\n- 중복 문항 제거: " + request.getDuplicate());
-        sb.append("\n- 발표 내용: " + request.getContent());
+        sb.append("- 발표 주제: ").append(request.getTopic());
+        sb.append("\n- 발표 목적: ").append(request.getPurpose());
+        sb.append("\n- 종결 어미: ").append(request.getWord());
+        sb.append("\n- 중복 문항 제거: ").append(request.getDuplicate());
+        sb.append("\n- 발표 내용: ").append(request.getContent());
 
         return sb.toString();
     }
@@ -182,20 +183,24 @@ public class ClovaChatServiceImpl implements ClovaChatService {
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode requestJson = mapper.createObjectNode();
-        ObjectNode message = mapper.createObjectNode();
-        message.put("role", "system");
-        message.put("content", content);
+        ArrayNode messagesArray = mapper.createArrayNode(); // 메시지 배열을 따로 생성
 
-        message.put("role", "user");
-        message.put("content", userMessage);
+        ObjectNode systemMessage = mapper.createObjectNode();
+        systemMessage.put("role", "system");
+        systemMessage.put("content", content);
+        messagesArray.add(systemMessage); // system 메시지를 배열에 추가
 
-        requestJson.set("messages", mapper.createArrayNode().add(message));
+        ObjectNode userMessageNode = mapper.createObjectNode();
+        userMessageNode.put("role", "user");
+        userMessageNode.put("content", userMessage);
+        messagesArray.add(userMessageNode); // user 메시지를 배열에 추가
+
+        requestJson.set("messages", messagesArray);
         requestJson.put("topP", 0.8);
         requestJson.put("topK", 0);
         requestJson.put("maxTokens", 2000);
         requestJson.put("temperature", 0.5);
         requestJson.put("repeatPenalty", 10.0);
-        requestJson.put("stopBefore", mapper.createArrayNode());
         requestJson.put("includeAiFilters", false);
         requestJson.put("seed", 0);
 
