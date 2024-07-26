@@ -149,7 +149,7 @@ public class ClovaChatServiceImpl implements ClovaChatService {
         sb.append("- 발표 주제: " + request.getTopic());
         sb.append("\n- 발표 목적: " + request.getPurpose());
         sb.append("\n- 종결 어미: " + request.getWord());
-//        sb.append("\n- 중복 문항 제거: " + request.getDuplicate());
+        sb.append("\n- 중복 문항 제거: " + request.getDuplicate());
         sb.append("\n- 발표 내용: " + request.getContent());
 
         return sb.toString();
@@ -159,12 +159,24 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     @Override
     public String requestJson(CreateClovaRequest request) {
 
-        String content = String.format("- 너는 발표 내용을 발표 대본으로 매끄럽게 만들어주는 논술 선생님이야.\\r\\n\\r\\n" +
-                "- 사용자가 요청한 주제에 맞게 발표 대본을 논리적이고 일관성 있게 전개해.\\r\\n" +
-                "- 사용자가 요청하는 키워드는 발표주제, 발표목적, 종결어미 가 있는데 각각 상황에 맞게 발표대본을 준비해.\\r\\n" +
-                "- 사용자가 요청한 발표 목적에 맞게 문장을 명확하고 간결하게 구성해.\\r\\n" +
-                "- 사용자가 요청한 종결어미에 맞게 정리해.\\r\\n\\r\\n" +
-                "- 답변해줄 문장으로는 발표 대본 내용으로만 구성해.");
+//        String content = String.format("- 너는 발표 내용을 발표 대본으로 매끄럽게 만들어주는 논술 선생님이야.\\r\\n\\r\\n" +
+//                "- 사용자가 요청한 주제에 맞게 발표 대본을 논리적이고 일관성 있게 전개해.\\r\\n" +
+//                "- 사용자가 요청하는 키워드는 발표주제, 발표목적, 종결어미 가 있는데 각각 상황에 맞게 발표대본을 준비해.\\r\\n" +
+//                "- 사용자가 요청한 발표 목적에 맞게 문장을 명확하고 간결하게 구성해.\\r\\n" +
+//                "- 사용자가 요청한 종결어미에 맞게 정리해.\\r\\n\\r\\n" +
+//                "- 답변해줄 문장으로는 발표 대본 내용으로만 구성해.");
+
+        String content = String.format("- 당신은 텍스트를 발표 대본으로 바꿔주는 어시스턴트 입니다.\\r\\n\\r\\n" +
+                "- 주어진 텍스트를 분석하고 풍부하고 명확한 발표 대본으로 제공합니다.\\r\\n" +
+                "- 다음 지침을 엄격히 준수하여 업무를 수행합니다.\\r\\n\\r\\n" +
+                "###엄격한 준수 사항\\r\\n\\r\\n" +
+                "- 사용자가 요청한 발표주제, 발표목적, 종결어미를 파악해서 발표대본을 완성합니다.\\r\\n" +
+                "- 중복표현 제거가 '\\'Y'\\' 일 경우 중복표현을 제거합니다.\\r\\n" +
+                "- 사용자가 읽기 편하게 가독성 있게 정리합니다. 문단마다 개행을 사용합니다.\\r\\n" +
+                "- 발표 대본을 개선 후 개선된 내용을 30자 미만으로 정리 합니다.\\r\\n" +
+                "- 마지막으로 개선된 발표내용에 대해 예상 질문과 답변을 3개씩 구성합니다.\\r\\n" +
+                "###끝\\r\\n\\r\\n" +
+                "###응답 형식\\r\\n1. 발표 대본\\r\\n2. 개선 내용\\r\\n3. 예상 질문,답변\\r\\n###끝");
 
         String userMessage = requestUserMessage(request);
 
