@@ -39,9 +39,11 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     private final String CLOVA_STUDIO_REQUEST_ID = "X-NCP-CLOVASTUDIO-REQUEST-ID";
 
     private final WebClient webClient;
+    private final ObjectMapper objectMapper;
 
     public ClovaChatServiceImpl(WebClient webClient) {
         this.webClient = webClient;
+        this.objectMapper = new ObjectMapper();
     }
 
     @Override
@@ -101,7 +103,6 @@ public class ClovaChatServiceImpl implements ClovaChatService {
                 .header(CLOVA_API_KEY_HEADER, clovastudioApiKey)
                 .header(GATEWAY_API_KEY_HEADER, gateWayApiKey)
                 .header(CLOVA_STUDIO_REQUEST_ID, clovastudioRequestId)
-//                .header(HttpHeaders.ACCEPT_CHARSET, "UTF-8")
                 .accept(MediaType.TEXT_EVENT_STREAM)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.CACHE_CONTROL, "no-cache")
@@ -117,9 +118,8 @@ public class ClovaChatServiceImpl implements ClovaChatService {
                 )
                 .bodyToFlux(String.class)
                 .takeUntil(data -> {
-                    ObjectMapper mapper = new ObjectMapper();
                     try {
-                        JsonNode jsonNode = mapper.readTree(data);
+                        JsonNode jsonNode = objectMapper.readTree(data);
                         String stopReason = jsonNode.path("stopReason").asText();
                         return "stop_before".equals(stopReason);
                     } catch (JsonProcessingException e) {
@@ -147,11 +147,11 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     public String requestUserMessage(CreateClovaRequest request) {
         StringBuilder sb = new StringBuilder();
 
-        sb.append("- 발표 주제: ").append(request.getTopic());
+        sb.append("- 발표 주제: ").append(request.getTopic().replace("\n", "\\n"));
         sb.append("\n- 발표 목적: ").append(request.getPurpose());
         sb.append("\n- 종결 어미: ").append(request.getWord());
         sb.append("\n- 중복 문항 제거: ").append(request.getDuplicate());
-        sb.append("\n- 발표 내용: ").append(request.getContent());
+        sb.append("\n- 발표 내용: ").append(request.getContent().replace("\n", "\\n"));
 
         return sb.toString();
     }
@@ -159,13 +159,6 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     /*system*/
     @Override
     public String requestJson(CreateClovaRequest request) {
-
-//        String content = String.format("- 너는 발표 내용을 발표 대본으로 매끄럽게 만들어주는 논술 선생님이야.\\r\\n\\r\\n" +
-//                "- 사용자가 요청한 주제에 맞게 발표 대본을 논리적이고 일관성 있게 전개해.\\r\\n" +
-//                "- 사용자가 요청하는 키워드는 발표주제, 발표목적, 종결어미 가 있는데 각각 상황에 맞게 발표대본을 준비해.\\r\\n" +
-//                "- 사용자가 요청한 발표 목적에 맞게 문장을 명확하고 간결하게 구성해.\\r\\n" +
-//                "- 사용자가 요청한 종결어미에 맞게 정리해.\\r\\n\\r\\n" +
-//                "- 답변해줄 문장으로는 발표 대본 내용으로만 구성해.");
 
         String content = String.format("- 당신은 텍스트를 발표 대본으로 바꿔주는 어시스턴트 입니다.\\r\\n\\r\\n" +
                 "- 주어진 텍스트를 분석하고 풍부하고 명확한 발표 대본으로 제공합니다.\\r\\n" +
@@ -182,16 +175,15 @@ public class ClovaChatServiceImpl implements ClovaChatService {
 
         String userMessage = requestUserMessage(request);
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode requestJson = mapper.createObjectNode();
-        ArrayNode messagesArray = mapper.createArrayNode(); // 메시지 배열을 따로 생성
+        ObjectNode requestJson = objectMapper.createObjectNode();
+        ArrayNode messagesArray = objectMapper.createArrayNode(); // 메시지 배열을 따로 생성
 
-        ObjectNode systemMessage = mapper.createObjectNode();
+        ObjectNode systemMessage = objectMapper.createObjectNode();
         systemMessage.put("role", "system");
         systemMessage.put("content", content);
         messagesArray.add(systemMessage); // system 메시지를 배열에 추가
 
-        ObjectNode userMessageNode = mapper.createObjectNode();
+        ObjectNode userMessageNode = objectMapper.createObjectNode();
         userMessageNode.put("role", "user");
         userMessageNode.put("content", userMessage);
         messagesArray.add(userMessageNode); // user 메시지를 배열에 추가
@@ -206,7 +198,7 @@ public class ClovaChatServiceImpl implements ClovaChatService {
         requestJson.put("seed", 0);
 
         try {
-            return mapper.writeValueAsString(requestJson);
+            return objectMapper.writeValueAsString(requestJson);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("JSON Processing Exception", e);
         }
