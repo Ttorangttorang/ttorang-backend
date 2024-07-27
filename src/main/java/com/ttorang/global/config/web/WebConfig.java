@@ -13,7 +13,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000", "https://ttorangttorang.vercel.app", "https://ttorangttorang.vercel.app/announce")
+                .allowedOrigins("http://localhost:3000", "https://ttorangttorang.vercel.app", "https://ttorangttorang.vercel.app/announce",
+                        "http://ttorangttorang.vercel.app", "http://ttorangttorang.vercel.app/announce")
                 .allowedHeaders("*")
                 .allowedMethods(
                         HttpMethod.GET.name(),
