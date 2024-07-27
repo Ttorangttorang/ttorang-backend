@@ -18,6 +18,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "https://ttorangttorang.vercel.app",
                         "http://ttorangttorang.vercel.app",
                         "https://www.ttorang.site",
+                        "https://api.ttorang.site",
+                        "https://api.www.ttorang.site",
                         "https://ttorang.vercel.app"
                 )
                 .allowedHeaders("*")
