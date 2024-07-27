@@ -59,12 +59,12 @@ jobs:
           password: ${{ secrets.NCP_PASSWORD }}
           port: ${{ secrets.NCP_PORT }}
           script: |
-            sudo fuser -k 8080/tcp || true 
+            sudo fuser -k 443/tcp || true 
             sudo docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo docker stop $(sudo docker ps -a -q) || true
             sudo docker rm -f $(sudo docker ps -a -q) || true
             sudo docker pull ${{ secrets.DOCKER_REPO }}
-            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_REPO }}
+            sudo docker run -d -p 443:8080 ${{ secrets.DOCKER_REPO }}
             sudo docker image prune -f
             sudo docker images
             ps -ef
