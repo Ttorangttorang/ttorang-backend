@@ -6,6 +6,7 @@ import com.ttorang.api.clova.service.ClovaChatService;
 import com.ttorang.global.model.RestApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,8 @@ public class ClovaController {
             description = "발표 내용 입력 후 CLOVA STUDIO를 통해 교정된 발표 내용을 반환"
     )
     @PostMapping(value = "/script", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> requestClova(@RequestBody CreateClovaRequest request) {
+    public Flux<String> requestClova(
+            @RequestBody @Valid CreateClovaRequest request) {
         return clovaChatService.requestClova(request);
     }
 
@@ -33,7 +35,8 @@ public class ClovaController {
             description = "발표 내용 입력 후 CLOVA STUDIO를 통해 교정된 발표 내용을 반환"
     )
     @PostMapping(value = "/script2")
-    public RestApiResponse<CreateClovaResponse> requestClova2(@RequestBody CreateClovaRequest request) {
+    public RestApiResponse<CreateClovaResponse> requestClova2(
+            @RequestBody @Valid CreateClovaRequest request) {
         return RestApiResponse.success(clovaChatService.requestClova2(request));
     }
 
