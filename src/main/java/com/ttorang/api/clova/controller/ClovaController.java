@@ -30,14 +30,20 @@ public class ClovaController {
         return clovaChatService.requestClova(request);
     }
 
-    @Operation(
-            summary = "발표 내용 교정 API",
-            description = "발표 내용 입력 후 CLOVA STUDIO를 통해 교정된 발표 내용을 반환"
-    )
-    @PostMapping(value = "/script2")
-    public RestApiResponse<CreateClovaResponse> requestClova2(
+    @PostMapping(value = "/script/test", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> requestClovaTest(
             @RequestBody @Valid CreateClovaRequest request) {
-        return RestApiResponse.success(clovaChatService.requestClova2(request));
+        return clovaChatService.requestClovaAndQnA(request);
     }
+
+//    @Operation(
+//            summary = "발표 내용 교정 API",
+//            description = "발표 내용 입력 후 CLOVA STUDIO를 통해 교정된 발표 내용을 반환"
+//    )
+//    @PostMapping(value = "/script2")
+//    public RestApiResponse<CreateClovaResponse> requestClova2(
+//            @RequestBody @Valid CreateClovaRequest request) {
+//        return RestApiResponse.success(clovaChatService.requestClova2(request));
+//    }
 
 }
