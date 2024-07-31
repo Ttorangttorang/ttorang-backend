@@ -30,14 +30,8 @@ public class ClovaController {
         return clovaChatService.requestClova(request);
     }
 
-    @Operation(
-            summary = "발표 내용 교정 API",
-            description = "발표 내용 입력 후 CLOVA STUDIO를 통해 교정된 발표 내용을 반환"
-    )
-    @PostMapping(value = "/script2")
-    public RestApiResponse<CreateClovaResponse> requestClova2(
-            @RequestBody @Valid CreateClovaRequest request) {
-        return RestApiResponse.success(clovaChatService.requestClova2(request));
-    }
+    // TODO : 스크립트 교정, 예상질문/답변 api 2개로 나누기
+
+
 
 }

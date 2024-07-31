@@ -47,53 +47,6 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     }
 
     @Override
-    public CreateClovaResponse requestClova2(CreateClovaRequest request) {
-        log.info("여기 잘 찍히는가?");
-        String requestJson = requestJson(request);
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        String responseJson = webClient.post()
-                .uri(CLOVA_API_URL)
-                .header(CLOVA_API_KEY_HEADER, clovastudioApiKey)
-                .header(GATEWAY_API_KEY_HEADER, gateWayApiKey)
-                .header(CLOVA_STUDIO_REQUEST_ID, clovastudioRequestId)
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.CACHE_CONTROL, "no-cache")
-                .header(HttpHeaders.CONNECTION, "keep-alive")
-                .bodyValue(requestJson)
-                .retrieve()
-                .onStatus(
-                        status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> {
-                            log.error("Error response status: {}", response.statusCode());
-                            return Mono.error(new RuntimeException("Error response status: " + response.statusCode()));
-                        }
-                )
-                .bodyToMono(String.class)
-                .doOnError(WebClientResponseException.class, e -> {
-                    log.error("WebClientResponseException: {}", e.getMessage());
-                })
-                .doOnError(ConnectException.class, e -> {
-                    log.error("ConnectException: {}", e.getMessage());
-                })
-                .doOnError(SocketTimeoutException.class, e -> {
-                    log.error("SocketTimeoutException: {}", e.getMessage());
-                })
-                .doOnError(e -> {
-                    log.error("Unexpected error: {}", e.getMessage());
-                })
-                .block(); // Mono를 블록하여 동기식으로 반환
-
-        try {
-            return objectMapper.readValue(responseJson, CreateClovaResponse.class);
-        } catch (Exception e) {
-            log.error("Error parsing JSON response", e);
-            throw new RuntimeException("Error parsing JSON response", e);
-        }
-    }
-
-    @Override
     public Flux<String> requestClova(CreateClovaRequest request) {
 
         String requestJson = requestJson(request);
