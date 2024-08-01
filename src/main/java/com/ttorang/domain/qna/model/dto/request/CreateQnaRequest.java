@@ -13,8 +13,6 @@ public class CreateQnaRequest {
 
     private String answer;
 
-    private Long scriptId;
-
     public Qna toEntity(Script script) {
         return Qna.newQna(question, answer, script);
     }

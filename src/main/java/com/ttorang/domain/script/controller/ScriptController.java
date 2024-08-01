@@ -31,8 +31,4 @@ public class ScriptController {
         return RestApiResponse.success(scriptService.createScript(request));
     }
 
-
-
-
-
 }

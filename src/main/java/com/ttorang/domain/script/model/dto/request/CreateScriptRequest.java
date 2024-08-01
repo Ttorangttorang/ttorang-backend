@@ -8,6 +8,8 @@ import java.util.List;
 @Getter
 public class CreateScriptRequest {
 
+    //TODO: validation 추가
+
     private String topic;
 
     private String purpose;

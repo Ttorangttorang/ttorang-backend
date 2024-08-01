@@ -6,13 +6,17 @@ import com.ttorang.domain.script.model.dto.request.CreateScriptRequest;
 import com.ttorang.domain.script.model.dto.response.CreateScriptResponse;
 import com.ttorang.domain.script.model.entity.Script;
 import com.ttorang.domain.script.repository.ScriptRepository;
+import com.ttorang.global.code.ErrorCode;
+import com.ttorang.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ScriptService {
 
@@ -33,8 +37,11 @@ public class ScriptService {
 
         Script savedScript = scriptRepository.save(script);
 
+        scriptRepository.findById(savedScript.getId())
+            .orElseThrow(() -> new NotFoundException(ErrorCode.E404_NOT_EXIST_SCRIPT));
+
         List<Qna> qnas = request.getQnaList().stream()
-                .map(qnaRequest -> qnaRequest.toEntity(savedScript))
+                .map(qnaRequest -> qnaRequest.toEntity(savedScript)) // qnaRequest를 entity로 변환
                 .collect(Collectors.toList());
 
         qnaRepository.saveAll(qnas);
