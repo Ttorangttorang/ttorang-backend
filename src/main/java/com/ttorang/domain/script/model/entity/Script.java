@@ -1,6 +1,7 @@
-package com.ttorang.domain.script;
+package com.ttorang.domain.script.model.entity;
 
 import com.ttorang.common.entity.BaseTimeEntity;
+import com.ttorang.domain.user.model.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +16,9 @@ public class Script extends BaseTimeEntity {
     @Column(name = "script_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     private String topic;
 

@@ -1,7 +1,9 @@
 package com.ttorang.api.clova.controller;
 
+import com.ttorang.api.clova.model.dto.request.CreateClovaForQnARequest;
 import com.ttorang.api.clova.model.dto.request.CreateClovaRequest;
 import com.ttorang.api.clova.model.dto.response.CreateClovaResponse;
+import com.ttorang.api.clova.service.ClovaChatForQnaService;
 import com.ttorang.api.clova.service.ClovaChatService;
 import com.ttorang.global.model.RestApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +21,7 @@ import reactor.core.publisher.Flux;
 public class ClovaController {
 
     private final ClovaChatService clovaChatService;
+    private final ClovaChatForQnaService clovaChatForQnaService;
 
     @Operation(
             summary = "발표 내용 교정 API (Flux)",
@@ -31,13 +34,13 @@ public class ClovaController {
     }
 
     @Operation(
-            summary = "발표 내용 교정 API",
-            description = "발표 내용 입력 후 CLOVA STUDIO를 통해 교정된 발표 내용을 반환"
+            summary = "예상질문, 답변 생성 API (Flux)",
+            description = "교정된 스크립트를 바탕으로 CLOVA STUDIO를 통해 예상 질문,답변을 반환"
     )
-    @PostMapping(value = "/script2")
-    public RestApiResponse<CreateClovaResponse> requestClova2(
-            @RequestBody @Valid CreateClovaRequest request) {
-        return RestApiResponse.success(clovaChatService.requestClova2(request));
+    @PostMapping(value = "/qna", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> requestClovaForQna(
+            @RequestBody @Valid CreateClovaForQnARequest request) {
+        return clovaChatForQnaService.requestClovaForQna(request);
     }
 
 }

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.ttorang.api.clova.model.dto.request.CreateClovaForQnARequest;
 import com.ttorang.api.clova.model.dto.request.CreateClovaRequest;
-import com.ttorang.api.clova.model.dto.response.CreateClovaResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -24,13 +24,13 @@ import java.net.SocketTimeoutException;
 @Slf4j
 @Service
 @Transactional
-public class ClovaChatServiceImpl implements ClovaChatService {
+public class ClovaChatForQnAServiceImpl implements ClovaChatForQnaService {
 
-    @Value("${clovastudio.api.key}")
+    @Value("${clovastudio.second.api.key}")
     private String clovastudioApiKey;
-    @Value("${clovastudio.gateway.api.key}")
+    @Value("${clovastudio.second.gateway.api.key}")
     private String gateWayApiKey;
-    @Value("${clovastudio.request.id}")
+    @Value("${clovastudio.second.request.id}")
     private String clovastudioRequestId;
 
     private final String CLOVA_API_URL = "https://clovastudio.stream.ntruss.com/serviceapp/v1/chat-completions/HCX-003";
@@ -42,13 +42,13 @@ public class ClovaChatServiceImpl implements ClovaChatService {
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
 
-    public ClovaChatServiceImpl(WebClient webClient) {
+    public ClovaChatForQnAServiceImpl(WebClient webClient) {
         this.webClient = webClient;
         this.objectMapper = new ObjectMapper();
     }
 
     @Override
-    public Flux<String> requestClova(CreateClovaRequest request) {
+    public Flux<String> requestClovaForQna(CreateClovaForQnARequest request) {
 
         String requestJson = requestJson(request);
 
@@ -98,58 +98,50 @@ public class ClovaChatServiceImpl implements ClovaChatService {
 
     /*user*/
     @Override
-    public String requestUserMessage(CreateClovaRequest request) {
+    public String requestUserMessageForQna(CreateClovaForQnARequest request) {
         StringBuilder sb = new StringBuilder();
-
-        sb.append("- 발표 주제: ").append(request.getTopic().replace("\n", "\\n"));
-        sb.append("\n- 발표 목적: ").append(request.getPurpose());
-        sb.append("\n- 종결 어미: ").append(request.getWord());
-        sb.append("\n- 중복 문항 제거: ").append(request.getDuplicate());
         sb.append("\n- 발표 내용: ").append(request.getContent().replace("\n", "\\n"));
-
         return sb.toString();
     }
 
     /*system*/
     @Override
-    public String requestJson(CreateClovaRequest request) {
+    public String requestJson(CreateClovaForQnARequest request) {
 
-        String content = String.format("" +
-                "- 당신은 텍스트를 발표 대본으로 바꿔주는 어시스턴트 입니다.\\r\\r\\r\\n\\n\\r\\n\\r\\n" +
-                "- 주어진 텍스트를 분석하고 풍부하고 명확한 발표 대본으로 제공합니다.\\r\\n" +
-                "- 다음 지침을 엄격히 준수하여 업무를 수행합니다.\\r\\n\\r\\n" +
-                "###응답 형식\\r\\n" +
-                "1. 발표 대본\\r\\n" +
-                "2. 개선 내용\\r\\n" +
-                "###끝\\r\\n\\r\\n" +
-                "###엄격한 준수 사항\\r\\n" +
+        String content = String.format(
+                "- 당신은 주어진 발표 대본으로 예상가능한 질문,답변을 만들어주는 어시스턴트 입니다.\\r\\n" +
+                "- 다음 지침을 엄격히 준수하여 업무를 수행합니다.\\r\\n###엄격한 준수 사항\\r\\n" +
                 "- 생략을 절대 금지합니다.\\r\\n" +
-                "- 청중들에게 발표내용에 대해 자신의 생각도 나타냅니다.\\r\\n" +
-                "- 사용자가 요청한 발표주제, 발표목적, 종결어미를 파악해서 발표대본을 완성합니다.\\r\\n" +
-                "- 중복표현 제거가 '\\''Y'\\'' 일 경우 중복표현을 제거합니다.\\r\\n" +
-                "- 사용자가 읽기 편하게 가독성 있게 정리합니다. 문단마다 개행을 사용합니다.\\r\\n" +
-                "- 발표 대본을 개선 후 개선된 내용을 30자 미만으로 정리 합니다.\\r\\n" +
+                "- 사용자가 요청한 발표대본으로 예상가능한 질문,답변을 4개씩 만들어 줍니다.\\r\\n" +
+                "- 사용자가 읽기 편하게 가독성 있게 정리합니다.\\r\\n" +
+                "- 질문,답변은 최대 150자를 넘지 않습니다.\\r\\n" +
+                "###끝\\r\\n\\r\\n" +
+                "###형식\\r\\n" +
+                "Q1.\\r\\n" +
+                "A1. \\r\\n" +
+                "Q2.\\r\\n" +
+                "A2. \\r\\n" +
                 "###끝\\r\\n\\n");
 
-        String userMessage = requestUserMessage(request);
+        String userMessage = requestUserMessageForQna(request);
 
         ObjectNode requestJson = objectMapper.createObjectNode();
-        ArrayNode messagesArray = objectMapper.createArrayNode(); // 메시지 배열을 따로 생성
+        ArrayNode messagesArray = objectMapper.createArrayNode();
 
         ObjectNode systemMessage = objectMapper.createObjectNode();
         systemMessage.put("role", "system");
         systemMessage.put("content", content);
-        messagesArray.add(systemMessage); // system 메시지를 배열에 추가
+        messagesArray.add(systemMessage);
 
         ObjectNode userMessageNode = objectMapper.createObjectNode();
         userMessageNode.put("role", "user");
         userMessageNode.put("content", userMessage);
-        messagesArray.add(userMessageNode); // user 메시지를 배열에 추가
+        messagesArray.add(userMessageNode);
 
         requestJson.set("messages", messagesArray);
         requestJson.put("topP", 0.8);
         requestJson.put("topK", 0);
-        requestJson.put("maxTokens", 1500);
+        requestJson.put("maxTokens", 350);
         requestJson.put("temperature", 0.5);
         requestJson.put("repeatPenalty", 10.0);
         requestJson.put("includeAiFilters", false);
