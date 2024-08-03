@@ -16,13 +16,8 @@ public class RequestUrlUtil {
 		String serverName = request.getServerName();
 		String contextPath = request.getContextPath();
 		int serverPort = request.getServerPort();
-		String url;
 
-		if (serverPort == 443) {
-			url = scheme + "://" + "api." + serverName;
-		} else {
-			url = scheme + "://" + serverName;
-		}
+		String url = scheme + "://" + serverName;
 
 		if (serverPort != 80 && serverPort != 443) {
 			url += ":" + serverPort;
