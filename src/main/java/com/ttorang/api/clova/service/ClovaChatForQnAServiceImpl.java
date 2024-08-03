@@ -53,7 +53,7 @@ public class ClovaChatForQnAServiceImpl implements ClovaChatForQnaService {
         String requestJson = requestJson(request);
 
         return webClient.post()
-                .uri(CLOVA_API_URL_TEST)
+                .uri(CLOVA_API_URL)
                 .header(CLOVA_API_KEY_HEADER, clovastudioApiKey)
                 .header(GATEWAY_API_KEY_HEADER, gateWayApiKey)
                 .header(CLOVA_STUDIO_REQUEST_ID, clovastudioRequestId)
