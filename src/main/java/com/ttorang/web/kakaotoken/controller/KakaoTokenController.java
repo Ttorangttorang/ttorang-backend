@@ -15,9 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
@@ -46,6 +44,7 @@ public class KakaoTokenController {
             summary = "카카오 로그인 API ",
             description = "인가 코드를 받은 후 카카오 토큰을 받습니다."
     )
+
     // step1 : 인가코드 받기
     @GetMapping("/kakao")
     public void kakaoLogin(
@@ -74,18 +73,25 @@ public class KakaoTokenController {
     // step2 : 인가코드로 카카오 토큰 받기
     @GetMapping("/oauth/kakao/callback")
     public ResponseEntity<KakaoTokenDto.Response> loginCallback(
+            HttpServletRequest request,
             @RequestParam("code") String code) {
 
         String contentType = "application/x-www-form-urlencoded;charset=utf-8";
+
+        String serviceUri = RequestUrlUtil.getServiceURL(request);
+        String redirectUri = "/oauth/kakao/callback";
+        String resultUri = serviceUri + redirectUri;
+
         KakaoTokenDto.Request kakaoTokenRequestDto = KakaoTokenDto.Request.builder()
                 .client_id(clientId)
                 .client_secret(clientSecret)
                 .grant_type("authorization_code")
                 .code(code)
-                .redirect_uri("https:/ttorang.site//oauth/kakao/callback")
+                .redirect_uri(resultUri)
                 .build();
 
         log.info("code : {}", code);
+        log.info("step2: redirectUri : {}", resultUri);
 
         KakaoTokenDto.Response kakaoToken = kakaoTokenClient.requestKakaoToken(contentType, kakaoTokenRequestDto);
         log.info("[-] kakaoToken : {}", kakaoToken);
