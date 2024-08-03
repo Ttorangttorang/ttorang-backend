@@ -11,15 +11,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RequestUrlUtil {
 
-	public static String getServiceURL(HttpServletRequest request){
-		String scheme 		= request.getScheme();
-		String serverName 	= request.getServerName();
-		String contextPath 	= request.getContextPath();
-		int serverPort 		= request.getServerPort();
+	public static String getServiceURL(HttpServletRequest request) {
+		String scheme = request.getScheme();
+		String serverName = request.getServerName();
+		String contextPath = request.getContextPath();
+		int serverPort = request.getServerPort();
+		String url;
 
-		String url = scheme + "://" + serverName;
+		if (serverPort == 443) {
+			url = scheme + "://" + "api." + serverName;
+		} else {
+			url = scheme + "://" + serverName;
+		}
 
-		if(serverPort != 80 && serverPort != 443){
+		if (serverPort != 80 && serverPort != 443) {
 			url += ":" + serverPort;
 		}
 
