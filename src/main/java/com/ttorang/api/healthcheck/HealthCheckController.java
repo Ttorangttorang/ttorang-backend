@@ -15,8 +15,8 @@ public class HealthCheckController {
 
     @GetMapping("")
     public RestApiResponse healthCheck() {
-        log.info("health-check success!!");
-        return RestApiResponse.success("health-check success!!");
+        log.info("health-check success!");
+        return RestApiResponse.success("health-check success!");
     }
 
 }
