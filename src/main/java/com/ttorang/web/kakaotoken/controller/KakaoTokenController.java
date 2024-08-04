@@ -44,7 +44,6 @@ public class KakaoTokenController {
             summary = "카카오 로그인 API ",
             description = "인가 코드를 받은 후 카카오 토큰을 받습니다."
     )
-
     // step1 : 인가코드 받기
     @GetMapping("/kakao")
     public void kakaoLogin(
@@ -70,6 +69,10 @@ public class KakaoTokenController {
         }
     }
 
+    @Operation(
+            summary = "인가 코드로 카카오 토큰을 받는 API",
+            description = "인가 코드를 받은 후 카카오 토큰을 받습니다."
+    )
     // step2 : 인가코드로 카카오 토큰 받기
     @GetMapping("/oauth/kakao/callback")
     public ResponseEntity<KakaoTokenDto.Response> loginCallback(
