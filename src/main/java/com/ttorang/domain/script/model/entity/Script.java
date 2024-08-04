@@ -26,6 +26,8 @@ public class Script extends BaseTimeEntity {
 
     private String word;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private String duplicate;
