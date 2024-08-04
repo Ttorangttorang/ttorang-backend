@@ -15,6 +15,12 @@ public enum ErrorCode {
     E404_NOT_EXIST_SCRIPT(NOT_FOUND, "NF001", "존재하지 않는 스크립트입니다."),
 
     /**
+     * 회원
+     */
+    INVALID_USER_TYPE(BAD_REQUEST, "M001", "잘못된 회원 타입입니다."),
+    ALREADY_REGISTERED_USER(BAD_REQUEST, "M002", "이미 가입된 회원입니다."),
+
+    /**
      * 인증 && 인가
      */
     TOKEN_EXPIRED(UNAUTHORIZED, "A001", "토큰이 만료되었습니다."),
