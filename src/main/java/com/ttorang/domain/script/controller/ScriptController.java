@@ -1,16 +1,16 @@
 package com.ttorang.domain.script.controller;
 
 import com.ttorang.domain.script.model.dto.request.CreateScriptRequest;
+import com.ttorang.domain.script.model.dto.request.UpdateScriptRequest;
 import com.ttorang.domain.script.model.dto.response.CreateScriptResponse;
+import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
 import com.ttorang.domain.script.service.ScriptService;
 import com.ttorang.global.model.RestApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,9 +26,20 @@ public class ScriptController {
     )
     @PostMapping("")
     public RestApiResponse<CreateScriptResponse> createScript(
-            @RequestBody CreateScriptRequest request) {
-
+            @Valid @RequestBody CreateScriptRequest request) {
         return RestApiResponse.success(scriptService.createScript(request));
     }
+
+    @Operation(
+            summary = "스크립트 수정 API",
+            description = "저장된 스크립트를 수정합니다."
+    )
+    @PostMapping("/{scriptId}")
+    public RestApiResponse<UpdateScriptResponse> updateScript(
+            @PathVariable Long scriptId,
+            @RequestBody UpdateScriptRequest request) {
+        return RestApiResponse.success(scriptService.updateScript(request, scriptId));
+    }
+
 
 }
