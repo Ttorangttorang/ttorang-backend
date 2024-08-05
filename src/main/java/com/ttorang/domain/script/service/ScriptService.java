@@ -5,6 +5,7 @@ import com.ttorang.domain.qna.repository.QnaRepository;
 import com.ttorang.domain.script.model.dto.request.CreateScriptRequest;
 import com.ttorang.domain.script.model.dto.request.UpdateScriptRequest;
 import com.ttorang.domain.script.model.dto.response.CreateScriptResponse;
+import com.ttorang.domain.script.model.dto.response.DeleteScriptResponse;
 import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
 import com.ttorang.domain.script.model.entity.Script;
 import com.ttorang.domain.script.repository.ScriptRepository;
@@ -55,10 +56,23 @@ public class ScriptService {
     public UpdateScriptResponse updateScript(UpdateScriptRequest request, Long scriptId) {
 
         Script script = scriptRepository.findById(scriptId)
-                .orElseThrow(() -> new NotFoundException(E404_NOT_EXIST_SCRIPT));
+            .orElseThrow(() -> new NotFoundException(E404_NOT_EXIST_SCRIPT));
 
         script.updateScript(request.getContent());
 
         return UpdateScriptResponse.of(script);
     }
+
+    /**
+     * 스크립트 삭제
+     */
+    public DeleteScriptResponse deleteScript(Long scriptId) {
+        scriptRepository.findById(scriptId)
+            .orElseThrow(() -> new NotFoundException(E404_NOT_EXIST_SCRIPT));
+
+        scriptRepository.deleteById(scriptId);
+
+        return DeleteScriptResponse.of(scriptId);
+    }
+
 }
