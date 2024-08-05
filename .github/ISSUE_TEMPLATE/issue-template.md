@@ -1,3 +1,12 @@
+---
+name: issue template
+about: Create a report to help us improve
+title: ''
+labels: bug
+assignees: zzjiho
+
+---
+
 ### 👥 작업에 참여한 인원
 <!-- 작업에 관계된 인원을 멘션으로 걸어주세요. -->
 
