@@ -16,8 +16,8 @@ public class Qna {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "script_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Script script;
 
     private String question;

@@ -3,6 +3,7 @@ package com.ttorang.domain.script.controller;
 import com.ttorang.domain.script.model.dto.request.CreateScriptRequest;
 import com.ttorang.domain.script.model.dto.request.UpdateScriptRequest;
 import com.ttorang.domain.script.model.dto.response.CreateScriptResponse;
+import com.ttorang.domain.script.model.dto.response.DeleteScriptResponse;
 import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
 import com.ttorang.domain.script.service.ScriptService;
 import com.ttorang.global.model.RestApiResponse;
@@ -41,5 +42,14 @@ public class ScriptController {
         return RestApiResponse.success(scriptService.updateScript(request, scriptId));
     }
 
+    @Operation(
+            summary = "스크립트 삭제 API",
+            description = "저장된 스크립트와 함께 구성된 예상질문, 답변을 삭제합니다."
+    )
+    @DeleteMapping("/{scriptId}")
+    public RestApiResponse<DeleteScriptResponse> deleteScript(
+            @PathVariable Long scriptId) {
+        return RestApiResponse.success(scriptService.deleteScript(scriptId));
+    }
 
 }
