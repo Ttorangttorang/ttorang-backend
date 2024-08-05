@@ -24,6 +24,7 @@ public class Script extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @Builder.Default
     @OneToMany(mappedBy = "script", cascade = CascadeType.REMOVE)
     private List<Qna> qna = new ArrayList<>();
 
