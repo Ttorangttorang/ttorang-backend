@@ -20,16 +20,19 @@ public class Script extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
     private String topic;
 
     private String purpose;
 
     private String word;
 
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
     private String duplicate;
 
+    public void updateScript(String content) {
+        this.content = content;
+    }
 }

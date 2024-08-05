@@ -7,15 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@Schema(description = "스크립트 저장 Response Dto")
+@Schema(description = "스크립트 수정 Response Dto")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class CreateScriptResponse {
+public class UpdateScriptResponse {
 
     @Schema(description = "스크립트 Id", example = "1")
     private Long id;
 
-    public static CreateScriptResponse of(Script script) {
-        return new CreateScriptResponse(
+    public static UpdateScriptResponse of(Script script) {
+        return new UpdateScriptResponse(
                 script.getId()
         );
     }
