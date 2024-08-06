@@ -41,6 +41,7 @@ public class ScriptService {
 
         Script script = Script.builder()
                 .content(request.getContent())
+                .topic(request.getTopic())
                 .user(user)
                 .build();
 

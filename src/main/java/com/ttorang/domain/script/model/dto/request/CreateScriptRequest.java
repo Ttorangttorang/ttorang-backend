@@ -14,6 +14,9 @@ public class CreateScriptRequest {
     @NotNull(message = "저장할 발표내용은 필수 입니다.")
     private String content;
 
+    @Schema(description = "발표 주제", example = "발표 주제 예시")
+    private String topic;
+
     private List<CreateQnaRequest> qnaList;
 
 }
