@@ -4,6 +4,7 @@ import com.ttorang.domain.script.model.dto.request.CreateScriptRequest;
 import com.ttorang.domain.script.model.dto.request.UpdateScriptRequest;
 import com.ttorang.domain.script.model.dto.response.CreateScriptResponse;
 import com.ttorang.domain.script.model.dto.response.DeleteScriptResponse;
+import com.ttorang.domain.script.model.dto.response.GetScriptListResponse;
 import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
 import com.ttorang.domain.script.service.ScriptService;
 import com.ttorang.global.model.RestApiResponse;
@@ -14,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,6 +61,17 @@ public class ScriptController {
             @UserInfo UserInfoDto userInfo) {
         return RestApiResponse.success(
                 scriptService.deleteScript(scriptId, userInfo.getUserId()));
+    }
+
+    @Operation(
+            summary = "스크립트 조회 API",
+            description = "내가 저장한 발표대본, 예상질문/답변을 조회합니다"
+    )
+    @GetMapping("")
+    public RestApiResponse<List<GetScriptListResponse>> getScriptList(
+            @UserInfo UserInfoDto userInfo) {
+        return RestApiResponse.success(
+                scriptService.getScriptList(userInfo.getUserId()));
     }
 
 }
