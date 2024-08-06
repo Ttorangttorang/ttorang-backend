@@ -10,9 +10,16 @@ public enum ErrorCode {
     TEST(INTERNAL_SERVER_ERROR, "T001", "business exception test"),
 
     /**
+     * 403 Forbidden (권한 등의 이유로 허용하지 않는 요청)
+     */
+    E403_FORBIDDEN(FORBIDDEN, "FB000", "허용하지 않는 요청입니다"),
+    E403_NOT_MY_SCRIPT(FORBIDDEN, "FB001", "자신의 발표문만 수정, 삭제 가능합니다."),
+
+    /**
      * 404 Not Found
      */
     E404_NOT_EXIST_SCRIPT(NOT_FOUND, "NF001", "존재하지 않는 스크립트입니다."),
+    E404_NOT_EXISTS_USER(NOT_FOUND, "NF002", "존재하지 않는 회원입니다."),
 
     /**
      * 회원

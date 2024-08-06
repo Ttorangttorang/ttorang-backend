@@ -7,6 +7,8 @@ import com.ttorang.domain.script.model.dto.response.DeleteScriptResponse;
 import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
 import com.ttorang.domain.script.service.ScriptService;
 import com.ttorang.global.model.RestApiResponse;
+import com.ttorang.resolver.userinfo.UserInfo;
+import com.ttorang.resolver.userinfo.UserInfoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -27,8 +29,10 @@ public class ScriptController {
     )
     @PostMapping("")
     public RestApiResponse<CreateScriptResponse> createScript(
+            @UserInfo UserInfoDto userInfo,
             @Valid @RequestBody CreateScriptRequest request) {
-        return RestApiResponse.success(scriptService.createScript(request));
+        return RestApiResponse.success(
+                scriptService.createScript(request, userInfo.getUserId()));
     }
 
     @Operation(
@@ -38,8 +42,10 @@ public class ScriptController {
     @PostMapping("/{scriptId}")
     public RestApiResponse<UpdateScriptResponse> updateScript(
             @PathVariable Long scriptId,
+            @UserInfo UserInfoDto userInfo,
             @RequestBody UpdateScriptRequest request) {
-        return RestApiResponse.success(scriptService.updateScript(request, scriptId));
+        return RestApiResponse.success(
+                scriptService.updateScript(request, scriptId, userInfo.getUserId()));
     }
 
     @Operation(
@@ -48,8 +54,10 @@ public class ScriptController {
     )
     @DeleteMapping("/{scriptId}")
     public RestApiResponse<DeleteScriptResponse> deleteScript(
-            @PathVariable Long scriptId) {
-        return RestApiResponse.success(scriptService.deleteScript(scriptId));
+            @PathVariable Long scriptId,
+            @UserInfo UserInfoDto userInfo) {
+        return RestApiResponse.success(
+                scriptService.deleteScript(scriptId, userInfo.getUserId()));
     }
 
 }
