@@ -6,6 +6,7 @@ import com.ttorang.domain.script.model.dto.request.CreateScriptRequest;
 import com.ttorang.domain.script.model.dto.request.UpdateScriptRequest;
 import com.ttorang.domain.script.model.dto.response.CreateScriptResponse;
 import com.ttorang.domain.script.model.dto.response.DeleteScriptResponse;
+import com.ttorang.domain.script.model.dto.response.GetScriptListResponse;
 import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
 import com.ttorang.domain.script.model.entity.Script;
 import com.ttorang.domain.script.repository.ScriptRepository;
@@ -99,4 +100,20 @@ public class ScriptService {
         return DeleteScriptResponse.of(scriptId);
     }
 
+    /**
+     * 내가 저장한 발표대본, 예상질문/답변을 조회
+     */
+    public List<GetScriptListResponse> getScriptList(Long userId) {
+
+        userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException(NOT_EXISTS_AUTHORIZATION));
+
+        List<Script> scriptList = scriptRepository.findByUserId(userId);
+
+        return scriptList.stream()
+                .map(script -> GetScriptListResponse.of(
+                        script.getId(), script.getContent(),
+                        script.getTopic(), script.getRegTime()))
+                .collect(Collectors.toList());
+    }
 }
