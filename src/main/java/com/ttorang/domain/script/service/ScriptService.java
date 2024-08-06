@@ -9,6 +9,9 @@ import com.ttorang.domain.script.model.dto.response.DeleteScriptResponse;
 import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
 import com.ttorang.domain.script.model.entity.Script;
 import com.ttorang.domain.script.repository.ScriptRepository;
+import com.ttorang.domain.user.model.entity.User;
+import com.ttorang.domain.user.repository.UserRepository;
+import com.ttorang.global.error.exception.ForbiddenException;
 import com.ttorang.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ttorang.global.code.ErrorCode.E404_NOT_EXIST_SCRIPT;
+import static com.ttorang.global.code.ErrorCode.*;
 
 @Service
 @Transactional
@@ -26,14 +29,19 @@ public class ScriptService {
 
     private final ScriptRepository scriptRepository;
     private final QnaRepository qnaRepository;
+    private final UserRepository userRepository;
 
     /**
      * 또랑이가 교정해준 발표문 저장
      */
-    public CreateScriptResponse createScript(CreateScriptRequest request) {
+    public CreateScriptResponse createScript(CreateScriptRequest request, Long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(NOT_EXISTS_AUTHORIZATION));
 
         Script script = Script.builder()
                 .content(request.getContent())
+                .user(user)
                 .build();
 
         Script savedScript = scriptRepository.save(script);
@@ -53,10 +61,17 @@ public class ScriptService {
     /**
      * 발표문 수정
      */
-    public UpdateScriptResponse updateScript(UpdateScriptRequest request, Long scriptId) {
+    public UpdateScriptResponse updateScript(UpdateScriptRequest request, Long scriptId, Long userId) {
+
+        userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException(NOT_EXISTS_AUTHORIZATION));
 
         Script script = scriptRepository.findById(scriptId)
             .orElseThrow(() -> new NotFoundException(E404_NOT_EXIST_SCRIPT));
+
+        if (!script.getUser().getId().equals(userId)) {
+            throw new ForbiddenException(E403_NOT_MY_SCRIPT);
+        }
 
         script.updateScript(request.getContent());
 
@@ -66,9 +81,17 @@ public class ScriptService {
     /**
      * 스크립트 삭제
      */
-    public DeleteScriptResponse deleteScript(Long scriptId) {
-        scriptRepository.findById(scriptId)
+    public DeleteScriptResponse deleteScript(Long scriptId, Long userId) {
+
+        userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException(NOT_EXISTS_AUTHORIZATION));
+
+        Script script = scriptRepository.findById(scriptId)
             .orElseThrow(() -> new NotFoundException(E404_NOT_EXIST_SCRIPT));
+
+        if (!script.getUser().getId().equals(userId)) {
+            throw new ForbiddenException(E403_NOT_MY_SCRIPT);
+        }
 
         scriptRepository.deleteById(scriptId);
 

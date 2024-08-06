@@ -6,6 +6,7 @@ import com.ttorang.global.error.exception.AuthenticationException;
 import com.ttorang.jwt.constant.GrantType;
 import com.ttorang.jwt.constant.TokenType;
 import com.ttorang.jwt.dto.JwtTokenDto;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -96,6 +97,22 @@ public class TokenManager {
             log.info("유효하지 않은 token", e);
             throw new AuthenticationException(NOT_VALID_TOKEN);
         }
+    }
+
+    public Claims getTokenClaims(String token) {
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(Keys.hmacShaKeyFor(tokenSecret.getBytes(StandardCharsets.UTF_8)))
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+        } catch (Exception e) {
+            log.info("유효하지 않은 token", e);
+            throw new AuthenticationException(NOT_VALID_TOKEN);
+        }
+        return claims;
     }
 
 
