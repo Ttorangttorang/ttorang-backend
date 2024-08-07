@@ -1,13 +1,12 @@
 package com.ttorang.domain.script.service;
 
+import com.ttorang.domain.qna.model.dto.request.CreateQnaRequest;
+import com.ttorang.domain.qna.model.dto.response.GetQnaResponse;
 import com.ttorang.domain.qna.model.entity.Qna;
 import com.ttorang.domain.qna.repository.QnaRepository;
 import com.ttorang.domain.script.model.dto.request.CreateScriptRequest;
 import com.ttorang.domain.script.model.dto.request.UpdateScriptRequest;
-import com.ttorang.domain.script.model.dto.response.CreateScriptResponse;
-import com.ttorang.domain.script.model.dto.response.DeleteScriptResponse;
-import com.ttorang.domain.script.model.dto.response.GetScriptListResponse;
-import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
+import com.ttorang.domain.script.model.dto.response.*;
 import com.ttorang.domain.script.model.entity.Script;
 import com.ttorang.domain.script.repository.ScriptRepository;
 import com.ttorang.domain.user.model.entity.User;
@@ -115,5 +114,29 @@ public class ScriptService {
                         script.getId(), script.getContent(),
                         script.getTopic(), script.getRegTime()))
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 발표대본 상세조회
+     */
+    public GetScriptDetailResponse getScriptDetail(Long userId, Long scriptId) {
+
+        userRepository.findById(userId)
+            .orElseThrow(() -> new NotFoundException(NOT_EXISTS_AUTHORIZATION));
+
+        Script scriptDetail = scriptRepository.findByIdAndUserId(scriptId, userId);
+        if (scriptDetail == null) {
+            throw new NotFoundException(E404_NOT_EXIST_SCRIPT);
+        }
+
+        List<Qna> qnaList = qnaRepository.findByScriptId(scriptId);
+        List<GetQnaResponse> qnaRequestList = qnaList.stream()
+                .map(qna -> GetQnaResponse.of(qna.getQuestion(), qna.getAnswer()))
+                .collect(Collectors.toList());
+
+        return GetScriptDetailResponse.of(
+                scriptDetail.getId(),
+                scriptDetail.getContent(),
+                qnaRequestList);
     }
 }
