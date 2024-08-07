@@ -2,10 +2,7 @@ package com.ttorang.domain.script.controller;
 
 import com.ttorang.domain.script.model.dto.request.CreateScriptRequest;
 import com.ttorang.domain.script.model.dto.request.UpdateScriptRequest;
-import com.ttorang.domain.script.model.dto.response.CreateScriptResponse;
-import com.ttorang.domain.script.model.dto.response.DeleteScriptResponse;
-import com.ttorang.domain.script.model.dto.response.GetScriptListResponse;
-import com.ttorang.domain.script.model.dto.response.UpdateScriptResponse;
+import com.ttorang.domain.script.model.dto.response.*;
 import com.ttorang.domain.script.service.ScriptService;
 import com.ttorang.global.model.RestApiResponse;
 import com.ttorang.resolver.userinfo.UserInfo;
@@ -64,8 +61,8 @@ public class ScriptController {
     }
 
     @Operation(
-            summary = "스크립트 조회 API",
-            description = "내가 저장한 발표대본, 예상질문/답변을 조회합니다"
+            summary = "스크립트 리스트 조회 API",
+            description = "내가 저장한 발표대본, 예상질문/답변 리스트를 조회합니다"
     )
     @GetMapping("")
     public RestApiResponse<List<GetScriptListResponse>> getScriptList(
@@ -73,5 +70,19 @@ public class ScriptController {
         return RestApiResponse.success(
                 scriptService.getScriptList(userInfo.getUserId()));
     }
+
+    @Operation(
+            summary = "스크립트 상세 조회 API",
+            description = "내가 저장한 발표대본, 예상질문/답변 상세 조회합니다"
+    )
+    @GetMapping("/{scriptId}")
+    public RestApiResponse<GetScriptDetailResponse> getScriptDetail(
+            @PathVariable Long scriptId,
+            @UserInfo UserInfoDto userInfo) {
+        return RestApiResponse.success(
+                scriptService.getScriptDetail(userInfo.getUserId(), scriptId));
+    }
+
+
 
 }
