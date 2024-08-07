@@ -17,13 +17,15 @@ public class OAuthAttributes {
     private String profile;
     private UserType userType;
     private String nickname;
+    private String deleteYn;
 
-    public User toUserEntity(UserType userType, Role role) {
+    public User toUserEntity(UserType userType, Role role, String deleteYn) {
         return User.builder()
                 .userName(name)
                 .email(email)
                 .userType(userType)
                 .role(role)
+                .deleteYn(deleteYn)
                 .build();
     }
 
