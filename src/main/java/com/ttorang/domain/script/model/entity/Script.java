@@ -41,7 +41,8 @@ public class Script extends BaseTimeEntity {
 
     private String duplicate;
 
-    public void updateScript(String content) {
+    public void updateScript(String content, String topic) {
         this.content = content;
+        this.topic = topic;
     }
 }

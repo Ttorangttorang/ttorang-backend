@@ -1,6 +1,5 @@
 package com.ttorang.domain.script.service;
 
-import com.ttorang.domain.qna.model.dto.request.CreateQnaRequest;
 import com.ttorang.domain.qna.model.dto.response.GetQnaResponse;
 import com.ttorang.domain.qna.model.entity.Qna;
 import com.ttorang.domain.qna.repository.QnaRepository;
@@ -74,7 +73,7 @@ public class ScriptService {
             throw new ForbiddenException(E403_NOT_MY_SCRIPT);
         }
 
-        script.updateScript(request.getContent());
+        script.updateScript(request.getContent(), request.getTopic());
 
         return UpdateScriptResponse.of(script);
     }
@@ -137,6 +136,7 @@ public class ScriptService {
         return GetScriptDetailResponse.of(
                 scriptDetail.getId(),
                 scriptDetail.getContent(),
+                scriptDetail.getTopic(),
                 qnaRequestList);
     }
 }

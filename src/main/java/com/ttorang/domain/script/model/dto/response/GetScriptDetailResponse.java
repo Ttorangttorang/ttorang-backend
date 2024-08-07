@@ -19,10 +19,13 @@ public class GetScriptDetailResponse {
     @Schema(description = "발표 대본", example = "발표 대본 예시")
     private String content;
 
+    @Schema(description = "발표 주제", example = "발표 주제 예시")
+    private String topic;
+
     private List<GetQnaResponse> qnaList;
 
     public static GetScriptDetailResponse of(
-            Long id, String content, List<GetQnaResponse> qnaList) {
-        return new GetScriptDetailResponse(id, content, qnaList);
+            Long id, String content, String topic, List<GetQnaResponse> qnaList) {
+        return new GetScriptDetailResponse(id, content, topic, qnaList);
     }
 }
