@@ -45,6 +45,7 @@ public class User extends BaseTimeEntity {
 
     private LocalDateTime tokenExpirationTime;
 
+    @Column(nullable = false, length = 1)
     private String deleteYn;
 
     private LocalDateTime deleteTime;
@@ -66,8 +67,11 @@ public class User extends BaseTimeEntity {
         tokenExpirationTime = DateTimeUtils.convertToLocalDateTime(jwtTokenDto.getRefreshTokenExpireTime());
     }
 
-    public void updateDeleteYn(String deleteYn) {
+    public void updateDeleteYnAndDelTimeNull(String deleteYn) {
         this.deleteYn = deleteYn;
+        if (deleteYn.equals("N")) {
+            this.deleteTime = null;
+        }
     }
 
     public void withDraw(String deleteYn) {

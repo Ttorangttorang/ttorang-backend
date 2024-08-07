@@ -6,7 +6,6 @@ import com.ttorang.domain.script.repository.ScriptRepository;
 import com.ttorang.domain.user.model.dto.response.DeleteUserResponse;
 import com.ttorang.domain.user.model.entity.User;
 import com.ttorang.domain.user.repository.UserRepository;
-import com.ttorang.global.code.ErrorCode;
 import com.ttorang.global.error.exception.BusinessException;
 import com.ttorang.global.error.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,7 @@ public class UserService {
     public User updateUser(User user) {
         User savedUser = userRepository.findById(user.getId())
             .orElseThrow(() -> new NotFoundException(E404_NOT_EXISTS_USER));
-        savedUser.updateDeleteYn("N");
+        savedUser.updateDeleteYnAndDelTimeNull("N");
         return savedUser;
     }
 
@@ -98,6 +97,5 @@ public class UserService {
                 .collect(Collectors.toList());
 
         userRepository.deleteByIdIn(userIds);
-
     }
 }
