@@ -31,22 +31,27 @@ public class OauthLoginService {
         OAuthAttributes userInfo = socialLoginApiService.getUserInfo(accessToken);
         log.info("userInfo : {}", userInfo);
 
-        JwtTokenDto jwtTokenDto;
+        JwtTokenDto jwtTokenDto = null;
 
-        Optional<User> user = userService.findUserByEmail(userInfo.getEmail());
+        User user = userService.findUserByEmail(userInfo.getEmail());
 
         //신규 회원가입
-        if (user.isEmpty()) {
-            User oauthUser = userInfo.toUserEntity(userType, Role.ROLE_USER);
+        if (user == null) {
+            User oauthUser = userInfo.toUserEntity(userType, Role.ROLE_USER, "N");
             oauthUser = userService.registUser(oauthUser);
-
             //accessToken 생성
             jwtTokenDto = tokenManager.createJwtTokenDto(oauthUser.getId(), oauthUser.getRole());
             oauthUser.updateRefreshToken(jwtTokenDto);
-        } else { //기존 회원이면
-            User oauthUser = user.get();
-            jwtTokenDto = tokenManager.createJwtTokenDto(oauthUser.getId(), oauthUser.getRole());
-            oauthUser.updateRefreshToken(jwtTokenDto);
+
+        } else if(user != null && user.getDeleteYn().equals("N")) { // 탈퇴 안한 회원
+            jwtTokenDto = tokenManager.createJwtTokenDto(user.getId(), user.getRole());
+            user.updateRefreshToken(jwtTokenDto);
+
+        } else if (user != null && user.getDeleteYn().equals("Y")) { // 탈퇴 한 회원
+            User againUser = userService.updateUser(user);
+            //accessToken 생성
+            jwtTokenDto = tokenManager.createJwtTokenDto(againUser.getId(), againUser.getRole());
+            againUser.updateRefreshToken(jwtTokenDto);
         }
         return OauthLoginDto.Response.of(jwtTokenDto);
     }

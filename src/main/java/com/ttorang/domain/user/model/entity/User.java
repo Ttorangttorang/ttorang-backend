@@ -47,19 +47,31 @@ public class User extends BaseTimeEntity {
 
     private String deleteYn;
 
+    private LocalDateTime deleteTime;
+
     @Builder
     public User(Long id, UserType userType, String email, String password,
-                String userName, Role role) {
+                String userName, Role role, String deleteYn) {
         this.id = id;
         this.userType = userType;
         this.email = email;
         this.password = password;
         this.userName = userName;
         this.role = role;
+        this.deleteYn = deleteYn;
     }
 
     public void updateRefreshToken(JwtTokenDto jwtTokenDto) {
         refreshToken = jwtTokenDto.getRefreshToken();
         tokenExpirationTime = DateTimeUtils.convertToLocalDateTime(jwtTokenDto.getRefreshTokenExpireTime());
+    }
+
+    public void updateDeleteYn(String deleteYn) {
+        this.deleteYn = deleteYn;
+    }
+
+    public void withDraw(String deleteYn) {
+        this.deleteYn = deleteYn;
+        this.deleteTime = LocalDateTime.now();
     }
 }
