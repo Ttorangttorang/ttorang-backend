@@ -18,4 +18,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("select u from User u where u.deleteYn = 'Y' and u.deleteTime < :deleteTime")
     List<User> getDeletedUser(@Param("deleteTime") LocalDateTime deleteTime);
 
+    void deleteByIdIn(List<Long> userIds);
 }

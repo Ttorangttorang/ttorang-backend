@@ -16,6 +16,7 @@ public class UserBatchScheduler {
      * 매일 자정 delDate 1달 지난 사용자 삭제
      */
     @Scheduled(cron = "0 0 12 * * ?")
+//    @Scheduled(fixedDelay = 60000) //test용
     public void runDailyJobForUser() {
         log.info("userDailyJob Update batch execute");
         userDailyJob.run();

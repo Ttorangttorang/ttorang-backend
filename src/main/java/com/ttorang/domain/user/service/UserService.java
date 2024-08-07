@@ -1,5 +1,8 @@
 package com.ttorang.domain.user.service;
 
+import com.ttorang.domain.qna.repository.QnaRepository;
+import com.ttorang.domain.script.model.entity.Script;
+import com.ttorang.domain.script.repository.ScriptRepository;
 import com.ttorang.domain.user.model.dto.response.DeleteUserResponse;
 import com.ttorang.domain.user.model.entity.User;
 import com.ttorang.domain.user.repository.UserRepository;
@@ -11,6 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.ttorang.global.code.ErrorCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +25,8 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final ScriptRepository scriptRepository;
+    private final QnaRepository qnaRepository;
 
     /**
      * 이메일로 회원 찾기
@@ -40,7 +49,7 @@ public class UserService {
     @Transactional
     public User updateUser(User user) {
         User savedUser = userRepository.findById(user.getId())
-            .orElseThrow(() -> new NotFoundException(ErrorCode.E404_NOT_EXISTS_USER));
+            .orElseThrow(() -> new NotFoundException(E404_NOT_EXISTS_USER));
         savedUser.updateDeleteYn("N");
         return savedUser;
     }
@@ -51,7 +60,7 @@ public class UserService {
     private void validateDuplicateUser(User user) {
         User savedUser = userRepository.findByEmail(user.getEmail());
         if (savedUser != null) {
-            throw new BusinessException(ErrorCode.ALREADY_REGISTERED_USER);
+            throw new BusinessException(ALREADY_REGISTERED_USER);
         }
     }
 
@@ -61,7 +70,7 @@ public class UserService {
     @Transactional
     public DeleteUserResponse deleteUserUpdateYn(Long userId) {
         User savedUser = userRepository.findById(userId)
-            .orElseThrow(() -> new NotFoundException(ErrorCode.E404_NOT_EXISTS_USER));
+            .orElseThrow(() -> new NotFoundException(E404_NOT_EXISTS_USER));
         savedUser.withDraw("Y");
         return DeleteUserResponse.of(savedUser.getId());
     }
@@ -69,8 +78,26 @@ public class UserService {
     /**
      * 회원 탈퇴
      */
+    @Transactional
     public void deleteUser() {
         LocalDateTime delDate = LocalDateTime.now().minusMonths(1);
-        userRepository.getDeletedUser(delDate);
+        List<User> deletedUsers = userRepository.getDeletedUser(delDate);
+
+        if (deletedUsers.isEmpty()) {
+            return;
+        }
+
+        List<Script> scriptsToDelete = scriptRepository.findByUserIn(deletedUsers);
+
+        qnaRepository.deleteByScriptIn(scriptsToDelete);
+
+        scriptRepository.deleteByUserIn(deletedUsers);
+
+        List<Long> userIds = deletedUsers.stream()
+                .map(user -> user.getId())
+                .collect(Collectors.toList());
+
+        userRepository.deleteByIdIn(userIds);
+
     }
 }
