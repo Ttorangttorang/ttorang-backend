@@ -28,7 +28,7 @@ public class UserController {
     public RestApiResponse<DeleteUserResponse> deleteUser(
             @UserInfo UserInfoDto userInfo) {
         return RestApiResponse.success(
-                userService.deleteUser(userInfo.getUserId()));
+                userService.deleteUserUpdateYn(userInfo.getUserId()));
     }
 
 

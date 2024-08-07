@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -56,13 +56,21 @@ public class UserService {
     }
 
     /**
-     * 회원 탈퇴
+     * 회원 탈퇴 (deleteYN update)
      */
     @Transactional
-    public DeleteUserResponse deleteUser(Long userId) {
+    public DeleteUserResponse deleteUserUpdateYn(Long userId) {
         User savedUser = userRepository.findById(userId)
             .orElseThrow(() -> new NotFoundException(ErrorCode.E404_NOT_EXISTS_USER));
         savedUser.withDraw("Y");
         return DeleteUserResponse.of(savedUser.getId());
+    }
+
+    /**
+     * 회원 탈퇴
+     */
+    public void deleteUser() {
+        LocalDateTime delDate = LocalDateTime.now().minusMonths(1);
+        userRepository.getDeletedUser(delDate);
     }
 }
