@@ -16,8 +16,7 @@
 ---
 ![image](https://github.com/user-attachments/assets/f2f56dbc-c431-46d4-9d2f-ffb38c849c3a)
 
-
-<br><br><br>
+<br><br>
 
 # 💻 Tech Stack
 - Java17, Spring Boot3.2, JPA <br>
@@ -27,9 +26,3 @@
 - JWT, OAuth2.0 <br>
 ---
 <br><br><br>
-
-
-
-# ⏲️ 현재 출시 준비중 입니다!
-
-
